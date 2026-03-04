@@ -10,7 +10,7 @@
 
 ## 🔥 What Makes It Different?
 
-Unlike standard Network tabs, this extension doesn't just list requests—it **understands** them.
+Unlike standard Network tabs, this extension doesn't just list requests it **understands** them.
 
 ### 1. 🏗️ The Recursive Schema Engine (Now Public!)
 We've made our core schema engine fully open-source. The `utils/schemaParser.js` algorithm performs **advanced recursive schema inference**, collapsing deep, nested JSON responses into clean, logical object models. It automatically:
