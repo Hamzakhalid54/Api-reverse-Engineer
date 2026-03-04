@@ -1,72 +1,74 @@
-# API Reverse Engineer 🕵️‍♂️ API Discovery & Documentation Toolkit
+# API Reverse Engineer 🕵️‍♂️ API Discovery & Security Toolkit
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Chrome Extension](https://img.shields.io/badge/Chrome-Extension-blue.svg)](https://developer.chrome.com/docs/extensions/)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
+[![GitHub stars](https://img.shields.io/github/stars/hamzak-code/Api-reverse-Engineer.svg?style=social)](https://github.com/hamzak-code/Api-reverse-Engineer)
 
-**API Reverse Engineer** is a professional-grade Chrome Extension designed for Developers, QA Engineers, and Security Researchers. It sits silently in your DevTools panel, intercepts background network traffic (`fetch`/`XHR`), and **automatically reconstructs the entire architectural blueprint of any web application you browse.**
-
-Stop digging through chaotic Network tabs in DevTools. Start exploring a structured, automatically generated API Map.
+**API Reverse Engineer** is a high-fidelity Chrome Extension designed for Security Researchers, Developers, and QA Engineers. It transforms your DevTools into a mission control for API forensics—automatically reconstructing architectural blueprints, mapping dependencies, and auditing security in real-time as you browse.
 
 ---
 
-## 🔒 Unlock The Core Schema Engine (Missing File)
+## 🔥 What Makes It Different?
 
-> [!WARNING]
-> **Notice:** The file `utils/schemaParser.js` is intentionally omitted from this public repository. This file contains the advanced recursive schema inference logic for nested JSON responses that power the **Entity structure inference** and **TypeScript Interface Generation** features. Without this file, the extension will capture traffic but will not be able to reconstruct JSON object models.
+Unlike standard Network tabs, this extension doesn't just list requests—it **understands** them.
 
-**Want access to the core Schema Engine?**  
-1. ⭐ **Star this repository** at the top right of the page.
-2. 📩 Open an Issue titled: `Access Request: Schema Engine`.
-3. I will verify you starred the repo and grant you private access to the missing file!
+### 1. 🏗️ The Recursive Schema Engine (Now Public!)
+We've made our core schema engine fully open-source. The `utils/schemaParser.js` algorithm performs **advanced recursive schema inference**, collapsing deep, nested JSON responses into clean, logical object models. It automatically:
+- Infers TypeScript interfaces for every endpoint.
+- Maps entity relationships across different API responses.
+- Detects pagination patterns and recursive data structures.
+
+### 2. 📊 Hybrid Dependency Visualization
+Explore your API architecture through three pro-level graph modes:
+- **Dependency Flow (Smart Mode):** A dynamic graph using glassmorphism UI and animated SVG connectors. It intelligently maps data flow using matching IDs or shared URL parameters (like `repo`, `user`, `org`) to show you the logical lineage of requests.
+- **Directory Tree:** A high-fidelity, hierarchical view of the API routing structure with professional SVG iconography.
+- **Timeline Waterfall:** A chronological map of your session, highlighting how one request leads to the next.
+
+### 3. 🧪 API Replay & IDOR Fuzzer
+A built-in sandbox for experimentation:
+- **Instant Replay:** One-click replay of any intercepted request with auto-populated headers and bodies.
+- **IDOR Fuzzer:** Automatically identifies numeric parameters and executes mutation tests to discover authorization leaks and logical vulnerabilities.
+
+### 4. 🛡️ Noise-Free Security Scanner
+Our security engine is tuned for high-signal forensics:
+- **PII Detection:** Automatically flags emails, JWTs, and internal API keys.
+- **Stack Trace Auditing:** Smarter heuristics detect verbose error leaks without flagging normal text noise.
+- **Auth Hardening:** Specifically audits state-changing methods (`POST`, `PUT`, `DELETE`) for missing or weak authorization.
+
+### 5. 📝 Pro Documentation Export
+Generate professional-grade artifacts in seconds:
+- **HTML Documentation Website:** A stunning, self-contained docs site with sidebar navigation and interactive code blocks.
+- **Multi-Format Code Gen:** Instant copy-pasteable snippets for **cURL**, **Axios**, **Native Fetch**, and **Python Requests**—all with interactive "Copied!" feedback.
+- **OpenAPI 3.0 & Postman:** Full export support for modern API toolchains.
 
 ---
 
-## ⚡ What Does It Actually Do?
+## 🚀 Getting Started
 
-As you click around a website, the extension watches the traffic and builds an intelligent workspace. **Inspired by professional workflows used in tools like BurpSuite and OWASP ZAP**, this extension provides an automated discovery pipeline directly in your browser.
+### Installation
+1. Clone the repository: `git clone https://github.com/hamzak-code/Api-reverse-Engineer.git`
+2. Open Chrome and go to `chrome://extensions/`.
+3. Enable **Developer Mode**.
+4. Click **Load unpacked** and select the extension folder.
 
-- **📡 Automatic REST & GraphQL Detection:** Seamlessly groups chaotic network calls by Base URL and Endpoint Paths (e.g., collapses `/users/1` and `/users/2` into `GET /users/:id`).
-- **🏗️ Entity Structure Inference:** Automatically builds strong JSON schema interfaces and infers potential entity structures from nested JSON responses.
-- **🕵️ Deep Hidden Endpoint Discovery:** Uses a 4-pronged heuristic engine (JS Bundle regex scanning, Response JSON crawling, ID Pattern inference, and Dictionary whitelists) to discover internal/admin APIs that *haven't even been called yet*.
-- **📊 Execution Flow Waterfall:** Visualizes the exact chronological order of API calls (e.g. `Page Load ↓ /getCsrfToken ↓ /getUser`).
-- **📁 Dependency Directory Tree:** Renders cleanly formatted ASCII tree topologies of the API's routing structure.
-- **🛡️ Security Scanner:** Automatically flags exposed Personally Identifiable Information (PII), missing authentication headers, verbose stack traces, and CORS misconfigurations.
-- **🚀 One-Click Code Scrapers:** Instantly converts any intercepted network call into a copy-pasteable script in `cURL`, `Axios (Node)`, `Fetch`, or `Python Requests`.
-- **📝 Automated Documentation:** Generates a beautiful HTML documentation page, an OpenAPI 3.0 specification file, or a full Postman Collection encompassing every endpoint captured during your session.
+### Usage
+1. Open **DevTools** (`F12`) on any target website.
+2. Click the **API Reverse Engineer** tab.
+3. Browse the application. Watch the dashboard build your API map in real-time.
+4. *(Optional)* Input a **Google Gemini API Key** in the settings to enable AI-powered endpoint explanations.
 
-## 🧠 How It Works Under The Hood
+---
 
-The extension leverages the native `chrome.devtools.network` API via Manifest V3. 
+## 🔒 Privacy & Safety
+- **100% Local:** All data parsing and scanning happens locally in your browser. No network data is ever sent to external servers.
+- **Filtering:** Intelligent filters exclude analytics and telemetry (`/tracking`, `/log`, `/metrics`) to keep your workspace clean and focused on business logic.
 
-1. **Interception:** A background listener captures requested URLs, methods, headers, and payloads.
-2. **Filtering:** Advanced telemetry filters instantly drop analytics, metrics, and tracking pixel payloads (`/log`, `/events`) before they enter memory so your API map stays pristine and focused on core business logic.
-3. **In-Memory Parsing:** Responses under 2MB are parsed through pattern-matching algorithms to detect Pagination logic (`?limit=`, `?cursor=`) and Authentication schemas (`Bearer`, `X-API-Key`).
-4. **No Cloud Dependency:** 100% of the traffic parsing, schema generation, and code generation happens **locally on your machine**. Absolutely zero network data is sent to external servers.
+---
 
-## 📦 Installation
-
-This extension is built entirely on standard Web APIs and requires no build steps or heavy frameworks.
-
-1. Clone or download this repository to your local machine:
-   ```bash
-   git clone https://github.com/YOUR_USERNAME/api-reverse-engineer.git
-   ```
-2. Open Google Chrome and navigate to `chrome://extensions/`.
-3. Enable **Developer mode** via the toggle switch in the top right corner.
-4. Click the **Load unpacked** button and select the folder containing this extension's code.
-
-## 💻 How to Use It on a Target Website
-
-1. Navigate to the web application you want to analyze.
-2. Open **Chrome DevTools** (`F12` or `Ctrl+Shift+I` / `Cmd+Option+I`).
-3. Click the new **"API Reverse Engineer"** tab at the top of the DevTools panel.
-4. Browse the target application like a normal user. Click buttons, open modals, and submit forms.
-5. Watch the DevTools panel instantly categorize traffic, reverse-engineer the database schema, guess hidden endpoints, and generate Postman collections in real-time.
-
-*(Optional)* To unlock AI functionality, enter your Google Gemini API key securely in the top right of the panel. This is stored utilizing Chrome's secure local storage API.
+## 🤝 Contributing
+Contributions are welcome! Whether it's adding new code exporters, refining fuzzing logic, or improving graph performance, feel free to open a PR.
 
 ---
 
 ### Disclaimer
-*This tool is intended strictly for debugging your own applications, building authorized integrations, API security research, and educational purposes. Do not use this tool to exploit or scrape third-party services without permission. Please parse responsibly.*
+*This tool is intended for debugging, security research, and educational purposes. Always ensure you have permission to test or analyze third-party APIs. Parse responsibly.*
