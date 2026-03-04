@@ -184,48 +184,67 @@ button.ai-btn:hover {
 }
 
 .api-endpoint-item {
-    padding: 6px 8px;
-    border-radius: 4px;
+    padding: 8px 12px;
     cursor: pointer;
+    border-radius: 4px;
     margin-bottom: 4px;
-    font-size: 0.85rem;
     display: flex;
-    gap: 8px;
-    font-family: var(--font-mono);
-    word-break: break-all;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    transition: all 0.2s;
 }
 
 .api-endpoint-item:hover {
-    background-color: var(--bg-hover);
+    background: var(--bg-hover);
+    color: var(--text-primary);
 }
 
 .api-endpoint-item.active {
-    background-color: #334155;
-    /* Neutral professional slate */
-    border: 1px solid #475569;
+    background: var(--bg-surface);
+    color: var(--accent);
+    border-left: 3px solid var(--accent);
 }
 
-.method-sm {
+/* Method Badges */
+.method-badge {
+    font-size: 0.7rem;
     font-weight: bold;
-    min-width: 40px;
-    text-align: right;
+    padding: 2px 6px;
+    border-radius: 3px;
+    min-width: 45px;
+    text-align: center;
+    background: var(--bg-surface);
+    display: inline-block;
 }
 
-.method-sm.get {
+.method-badge.method-get {
     color: var(--method-get);
 }
 
-.method-sm.post {
+.method-badge.method-post {
     color: var(--method-post);
 }
 
-.method-sm.put,
-.method-sm.patch {
+.method-badge.method-put,
+.method-badge.method-patch {
     color: var(--method-put);
 }
 
-.method-sm.delete {
+.method-badge.method-delete {
     color: var(--method-delete);
+}
+
+.method-badge.method-graphql {
+    color: var(--accent);
+}
+
+.path-text {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 /* Timeline */
@@ -686,6 +705,91 @@ button.ai-btn:hover {
     overflow-y: auto;
     background: transparent;
 }
+
+/* JSON Tree Viewer */
+.json-viewer {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--text-primary);
+}
+
+.json-item {
+    margin-left: 15px;
+}
+
+.json-viewer details {
+    margin: 2px 0;
+}
+
+.json-viewer summary {
+    cursor: pointer;
+    padding: 2px 5px;
+    border-radius: 4px;
+    list-style: none;
+    outline: none;
+    user-select: none;
+}
+
+.json-viewer summary::-webkit-details-marker {
+    display: none;
+}
+
+.json-viewer summary::before {
+    content: '▶';
+    display: inline-block;
+    width: 15px;
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    transition: transform 0.2s;
+}
+
+.json-viewer details[open]>summary::before {
+    transform: rotate(90deg);
+}
+
+.json-viewer summary:hover {
+    background: var(--bg-hover);
+}
+
+.json-content {
+    border-left: 1px solid var(--border);
+    margin-left: 6px;
+    padding-left: 10px;
+}
+
+.json-key {
+    color: #ae81ff;
+    /* Purple */
+    margin-right: 5px;
+}
+
+.json-type {
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+    font-style: italic;
+}
+
+.json-value-string {
+    color: #e6db74;
+}
+
+/* Yellow */
+.json-value-number {
+    color: #fd971f;
+}
+
+/* Orange */
+.json-value-boolean {
+    color: #f92672;
+}
+
+/* Pink */
+.json-value-null {
+    color: #75715e;
+}
+
+/* Gray */
 
 .sample-selector {
     display: flex;

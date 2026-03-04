@@ -225,10 +225,16 @@ if (typeof chrome !== 'undefined' && chrome.devtools && chrome.devtools.network)
             // 1. JS Bundle Scanning
             if (type === 'script') {
                 // Look for strings that look like REST paths
-                const apiPaths = text.match(/\/api\/[a-zA-Z0-9-_\/]+/g);
-                const v1Paths = text.match(/\/v[1-9]\/[a-zA-Z0-9-_\/]+/g);
-                if (apiPaths) apiPaths.forEach(p => discoveredJSEndpoints.add(p));
-                if (v1Paths) v1Paths.forEach(p => discoveredJSEndpoints.add(p));
+                const apiPaths = text.match(/['"`]\/[a-zA-Z0-9-._]+(\/[a-zA-Z0-9-._]+)+['"`]/g);
+                if (apiPaths) {
+                    apiPaths.forEach(p => {
+                        const cleanPath = p.replace(/['"`]/g, '');
+                        // Filter out common false positives (like version numbers or file extensions)
+                        if (cleanPath.includes('/') && cleanPath.length > 3 && !cleanPath.endsWith('.js') && !cleanPath.endsWith('.css')) {
+                            discoveredJSEndpoints.add(cleanPath);
+                        }
+                    });
+                }
 
                 // If this is just a bundle, we scanned it, now exit so it doesn't pollute the main API list
                 if (!req.request.url.includes('api')) return;
@@ -380,7 +386,9 @@ function updateUI(searchTerm = '') {
 
             const ep = document.createElement('div');
             ep.className = 'api-endpoint-item';
-            ep.innerHTML = `<span class="method-sm ${methodWord.toLowerCase()}">${methodWord}</span> <span>${pathWord}</span>`;
+
+            const methodBadge = `<span class="method-badge method-${methodWord.toLowerCase()}">${methodWord}</span>`;
+            ep.innerHTML = `${methodBadge} <span class="path-text">${pathWord}</span>`;
 
             ep.addEventListener('click', () => {
                 document.querySelectorAll('.api-endpoint-item').forEach(el => el.classList.remove('active'));
@@ -546,10 +554,13 @@ function selectEndpoint(reqsArray, normalizedPath) {
 
     // Mini Console Preview
     const consoleEl = document.getElementById('ep-mini-console');
-    let miniResp = latestReq.responseBody ? JSON.stringify(latestReq.responseBody, null, 2) : '{}';
-    document.getElementById('ep-sample-size').innerText = `(${(miniResp.length / 1024).toFixed(1)} KB)`;
-    if (miniResp.length > 5000) miniResp = miniResp.substring(0, 5000) + '\n... (truncated)';
-    consoleEl.innerHTML = escapeHtml(miniResp);
+    if (latestReq.responseBody) {
+        document.getElementById('ep-sample-size').innerText = `(${(JSON.stringify(latestReq.responseBody).length / 1024).toFixed(1)} KB)`;
+        renderJSON(latestReq.responseBody, consoleEl);
+    } else {
+        document.getElementById('ep-sample-size').innerText = '(0 KB)';
+        consoleEl.innerHTML = '{}';
+    }
 
     // Request Parameters Viewer
     const queryEl = document.getElementById('ep-req-query');
@@ -594,14 +605,20 @@ function selectEndpoint(reqsArray, normalizedPath) {
         btn.addEventListener('click', () => {
             document.querySelectorAll('.sample-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            let prettyRes = reqObj.responseBody ? JSON.stringify(reqObj.responseBody, null, 2) : 'No response data';
-            document.getElementById('ep-example-res').innerText = prettyRes;
+            if (reqObj.responseBody) {
+                renderJSON(reqObj.responseBody, document.getElementById('ep-example-res'));
+            } else {
+                document.getElementById('ep-example-res').innerText = 'No response data';
+            }
         });
         sampleSelector.appendChild(btn);
     });
 
-    let prettyRes = latestReq.responseBody ? JSON.stringify(latestReq.responseBody, null, 2) : 'No response data';
-    document.getElementById('ep-example-res').innerText = prettyRes;
+    if (latestReq.responseBody) {
+        renderJSON(latestReq.responseBody, document.getElementById('ep-example-res'));
+    } else {
+        document.getElementById('ep-example-res').innerText = 'No response data';
+    }
 
     // Code Generators
     generateCode(latestReq);
@@ -745,7 +762,14 @@ function renderGraphTimeline(container) {
         let path = req.url;
         try { path = new URL(req.url).pathname; } catch (e) { }
 
-        node.innerHTML = `<span style="color:var(--method-${req.method.toLowerCase()}); font-weight:bold; margin-right:8px">${req.method}</span> ${path}`;
+        const methodBadge = `<span class="method-badge method-${req.method.toLowerCase()}">${req.method}</span>`;
+        // Check for GraphQL (assuming req.isGraphQL and req.graphqlOp exist if applicable)
+        const displayPath = req.isGraphQL ? `[GQL] ${req.graphqlOp}` : path;
+
+        node.innerHTML = `
+            ${methodBadge}
+            <span class="path-text">${displayPath}</span>
+        `;
         container.appendChild(node);
     });
 }
@@ -799,6 +823,54 @@ function renderGraphTree(container) {
 
         container.appendChild(branchContainer);
     });
+}
+
+function renderJSON(obj, container) {
+    container.innerHTML = '';
+    const wrapper = document.createElement('div');
+    wrapper.className = 'json-viewer';
+
+    function createNode(key, value, isRoot = false) {
+        const item = document.createElement('div');
+        item.className = 'json-item';
+
+        if (value !== null && typeof value === 'object') {
+            const details = document.createElement('details');
+            if (isRoot) details.open = true;
+
+            const summary = document.createElement('summary');
+            const typeLabel = Array.isArray(value) ? `Array[${value.length}]` : 'Object';
+            summary.innerHTML = `<span class="json-key">${key}:</span> <span class="json-type">${typeLabel}</span>`;
+
+            details.appendChild(summary);
+
+            const content = document.createElement('div');
+            content.className = 'json-content';
+
+            for (const k in value) {
+                content.appendChild(createNode(k, value[k]));
+            }
+
+            details.appendChild(content);
+            item.appendChild(details);
+        } else {
+            let valStr = JSON.stringify(value);
+            let valClass = typeof value;
+            if (value === null) valClass = 'null';
+
+            item.innerHTML = `<span class="json-key">${key}:</span> <span class="json-value json-value-${valClass}">${valStr}</span>`;
+        }
+
+        return item;
+    }
+
+    wrapper.appendChild(createNode('Response', obj, true));
+    wrapper.querySelectorAll('details').forEach(d => {
+        d.addEventListener('toggle', (e) => {
+            e.stopPropagation();
+        });
+    });
+    container.appendChild(wrapper);
 }
 
 function downloadFile(content, filename, mimeType = 'application/json') {

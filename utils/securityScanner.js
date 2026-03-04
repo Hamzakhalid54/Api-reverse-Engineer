@@ -14,6 +14,15 @@ export function scanForSecurityIssues(requestData, responseBody) {
             warnings.push("Possible stack trace exposed in response. (Information Disclosure)");
         }
 
+        // More robust "Real" check for error objects
+        if (typeof responseBody === 'object') {
+            const errorKeys = ['stack', 'traceback', 'exception', 'errorMessage', 'error_stack'];
+            const foundKey = errorKeys.find(key => bodyStr.toLowerCase().includes(`"${key}":`));
+            if (foundKey) {
+                warnings.push(`Verbose error details found (Key: "${foundKey}"). Potential internal information exposure.`);
+            }
+        }
+
         let lowerBody = bodyStr.toLowerCase();
         if (lowerBody.includes('"password":') || lowerBody.includes('"secret":') || lowerBody.includes('"private_key":')) {
             warnings.push("Response body contains potentially sensitive fields (password, secret, private_key).");
