@@ -28,7 +28,7 @@ As you click around a website, the extension watches the traffic and builds an i
 
 - **📡 Automatic REST & GraphQL Detection:** Seamlessly groups chaotic network calls by Base URL and Endpoint Paths (e.g., collapses `/users/1` and `/users/2` into `GET /users/:id`).
 - **🏗️ Database Schema Inference:** Automatically builds strong JSON schema interfaces and infers underlying SQL/NoSQL table relationships by analyzing the nested structures of intercepted response bodies.
-- **�️ Deep Hidden Endpoint Discovery:** Uses a 4-pronged heuristic engine (JS Bundle regex scanning, Response JSON crawling, ID Pattern inference, and Dictionary whitelists) to discover internal/admin APIs that *haven't even been called yet*.
+- **🕵️ Deep Hidden Endpoint Discovery:** Uses a 4-pronged heuristic engine (JS Bundle regex scanning, Response JSON crawling, ID Pattern inference, and Dictionary whitelists) to discover internal/admin APIs that *haven't even been called yet*.
 - **📊 Execution Flow Waterfall:** Visualizes the exact chronological order of API calls (e.g. `Page Load ↓ /getCsrfToken ↓ /getUser`).
 - **📁 Dependency Directory Tree:** Renders cleanly formatted ASCII tree topologies of the API's routing structure.
 - **🛡️ Security Scanner:** Automatically flags exposed Personally Identifiable Information (PII), missing authentication headers, verbose stack traces, and CORS misconfigurations.
