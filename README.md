@@ -64,7 +64,7 @@ This extension is built entirely on standard Web APIs and requires no build step
 4. Browse the target application like a normal user. Click buttons, open modals, and submit forms.
 5. Watch the DevTools panel instantly categorize traffic, reverse-engineer the database schema, guess hidden endpoints, and generate Postman collections in real-time.
 
-*(Optional)* To unlock AI functionality (if you have the unlocked file), enter your Google Gemini API key securely in the top right of the panel. This is stored utilizing Chrome's secure local storage API.
+*(Optional)* To unlock AI functionality, enter your Google Gemini API key securely in the top right of the panel. This is stored utilizing Chrome's secure local storage API.
 
 ---
 
