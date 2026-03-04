@@ -1,0 +1,26 @@
+{
+  "manifest_version": 3,
+  "name": "API Reverse Engineer",
+  "version": "1.0",
+  "description": "Automatically captures, documents, and reverse engineers APIs while you browse. Features include code generation, OpenAPI export, HTML Docs, and smart relationship graphs.",
+  "devtools_page": "devtools.html",
+  "permissions": [
+    "storage",
+    "downloads"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "API Reverse Engineer UI",
+    "default_popup": "panel.html"
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}

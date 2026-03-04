@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>API Reverse Engineer</title>
+    <link rel="stylesheet" href="panel.css">
+</head>
+
+<body>
+    <header class="app-header">
+        <div class="header-title">
+            <h1>API Reverse Engineer</h1>
+        </div>
+        <div class="settings-group" style="position: relative;">
+            <input type="password" id="gemini-key" placeholder="Provide your own Gemini API Key..."
+                title="Your key is never sent to our servers. It is stored securely in your browser's local storage." />
+            <button id="clear-data-btn" class="danger">Clear Data</button>
+        </div>
+    </header>
+
+    <div class="layout-main">
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <h2>API Map</h2>
+                <div class="search-box">
+                    <input type="text" id="endpoint-search" placeholder="Search API..." />
+                    <div class="filter-chips">
+                        <button class="filter-btn" data-filter="GET">GET</button>
+                        <button class="filter-btn" data-filter="POST">POST</button>
+                        <button class="filter-btn" data-filter="Errors">Errors</button>
+                        <button class="filter-btn" data-filter="Auth">Auth</button>
+                        <button class="filter-btn" data-filter="Public">Public</button>
+                    </div>
+                </div>
+                <div id="api-map-container" class="scroll-container">
+                    <p class="empty-msg">No endpoints mapped yet.</p>
+                </div>
+            </div>
+
+            <div class="sidebar-section timeline-container">
+                <h2>Network Timeline</h2>
+                <div id="timeline-container" class="scroll-container">
+                    <ul id="timeline-list"></ul>
+                </div>
+            </div>
+        </aside>
+
+        <main class="content-area">
+            <div class="toolbar">
+                <button id="export-postman-btn">Export Postman Collection</button>
+                <button id="export-openapi-btn">Export OpenAPI</button>
+                <button id="export-html-btn" class="primary-btn"
+                    style="background-color: var(--success); color: #000;">Docs (HTML)</button>
+                <button id="show-graph-btn" class="primary-btn">Visual Graph</button>
+                <button id="ai-architect-btn" class="ai-btn"
+                    title="Sends an aggregated summary of all endpoint URLs/methods to Google Gemini">Architecture
+                    Analysis (AI)</button>
+            </div>
+
+            <div id="global-ai-result" class="ai-result-box hidden">
+                <h3>AI Architecture Analysis</h3>
+                <div id="global-ai-content" class="markdown-body"></div>
+            </div>
+
+            <div id="empty-state" class="empty-state">
+                <h2>Waiting for Network Traffic...</h2>
+                <p>Browse the website to automatically capture and reverse engineer the API.</p>
+                <p>Ensure you are interacting with elements that trigger JSON API requests.</p>
+            </div>
+
+            <div id="graph-view" class="hidden">
+                <div class="ep-header">
+                    <h2>API Relationship Graph</h2>
+                    <div style="margin-left:auto; display:flex; gap: 10px;">
+                        <button id="mode-timeline-btn" class="filter-btn active" style="font-size:0.85rem">Timeline
+                            Mode</button>
+                        <button id="mode-tree-btn" class="filter-btn" style="font-size:0.85rem">Dependency Tree</button>
+                    </div>
+                    <button id="close-graph-btn" class="danger"
+                        style="margin-left:15px; padding: 4px 8px;">Close</button>
+                </div>
+                <div id="canvas-container" class="scroll-container"
+                    style="height: 60vh; background: var(--bg-deep); border-radius: 8px; border: 1px solid var(--border-color); padding: 20px; text-align: center;">
+                    <div id="graph-nodes-container"
+                        style="display: flex; flex-wrap: wrap; justify-content: center; gap: 30px; align-items: center; min-height: 100%;">
+                        <!-- Dynamic Nodes -->
+                    </div>
+                </div>
+            </div>
+
+            <div id="endpoint-details" class="hidden">
+                <div class="ep-header">
+                    <span id="ep-method" class="method-badge"></span>
+                    <span id="ep-url" class="url-text"></span>
+                </div>
+
+                <div class="info-grid">
+                    <div class="info-card">
+                        <h3>Detection Results</h3>
+                        <p><strong>Authentication:</strong> <span id="ep-auth"></span></p>
+                        <p><strong>Pagination:</strong> <span id="ep-pagination"></span></p>
+                    </div>
+                    <div class="info-card">
+                        <h3>Endpoint Statistics</h3>
+                        <p><strong>Calls:</strong> <span id="ep-calls"></span></p>
+                        <p><strong>Avg Time:</strong> <span id="ep-avg-time"></span>ms</p>
+                        <p><strong>Errors:</strong> <span id="ep-errors" style="color:var(--danger)"></span></p>
+                    </div>
+                    <div class="info-card warning-card">
+                        <h3>Security Scanner</h3>
+                        <ul id="ep-warnings"></ul>
+                    </div>
+                    <div class="info-card">
+                        <h3 style="color:var(--method-get)">Hidden Endpoints Discovery</h3>
+                        <ul id="ep-hidden-guesses"
+                            style="color:var(--method-get); font-family:var(--font-mono); font-size: 0.85rem; padding-left: 20px; list-style: square;">
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="ai-explain-section">
+                    <button id="explain-endpoint-btn" class="ai-btn"
+                        title="Only the schema data for this specific endpoint will be sent to Google Gemini">Explain
+                        Endpoint (AI)</button>
+                    <p style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 5px; text-align: center;">
+                        <span style="color:var(--warning)">Privacy Notice:</span> Clicking this button securely
+                        transmits this single endpoint's data to the Google Gemini API for analysis.
+                    </p>
+                    <div id="ep-ai-explanation" class="ai-result-box hidden">
+                        <div class="markdown-body"></div>
+                    </div>
+                </div>
+
+                <div class="mini-console-wrapper">
+                    <div class="mini-console-header">Latest Response Preview <span id="ep-sample-size"></span></div>
+                    <pre><code id="ep-mini-console" class="mini-console language-json"></code></pre>
+                </div>
+
+                <div class="tabs">
+                    <button class="tab-btn active" data-target="tab-schema">Schema Viewer</button>
+                    <button class="tab-btn" data-target="tab-code">Code Generator / Scraper</button>
+                    <button class="tab-btn" data-target="tab-replay">API Replay</button>
+                </div>
+
+                <div class="tab-content active" id="tab-schema">
+                    <div class="schema-grid">
+                        <div class="schema-col">
+                            <h4>Response Schema</h4>
+                            <pre><code id="ep-schema"></code></pre>
+
+                            <h4 style="margin-top:20px;">Database Inference</h4>
+                            <pre><code id="ep-db-schema" style="color:#f2bc57"></code></pre>
+
+                            <h4 style="margin-top:20px;">Response Samples History</h4>
+                            <div class="sample-selector" id="ep-sample-selector">
+                                <!-- Populated dynamically -->
+                            </div>
+                            <pre><code id="ep-example-res" style="max-height: 400px; overflow-y: auto;"></code></pre>
+                        </div>
+                        <div class="schema-col">
+                            <h4>Request Parameters</h4>
+
+                            <h5 style="color:var(--text-secondary); margin: 15px 0 5px 0;">Headers</h5>
+                            <pre><code id="ep-req-headers"></code></pre>
+
+                            <h5 style="color:var(--text-secondary); margin: 15px 0 5px 0;">Query String</h5>
+                            <pre><code id="ep-req-query"></code></pre>
+
+                            <h5 style="color:var(--text-secondary); margin: 15px 0 5px 0;">Body Payload</h5>
+                            <pre><code id="ep-req-body"></code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="tab-code">
+                    <div class="code-box">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <h4>cURL</h4>
+                            <button class="copy-btn" data-target="code-curl">Copy</button>
+                        </div>
+                        <pre><code id="code-curl" class="language-bash"></code></pre>
+                    </div>
+                    <div class="code-box">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <h4>Axios (JS)</h4>
+                            <button class="copy-btn" data-target="code-axios">Copy</button>
+                        </div>
+                        <pre><code id="code-axios" class="language-javascript"></code></pre>
+                    </div>
+                    <div class="code-box">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <h4>Fetch (JS)</h4>
+                            <button class="copy-btn" data-target="code-node">Copy</button>
+                        </div>
+                        <pre><code id="code-node" class="language-javascript"></code></pre>
+                    </div>
+                    <div class="code-box">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <h4>Python Requests</h4>
+                            <button class="copy-btn" data-target="code-python">Copy</button>
+                        </div>
+                        <pre><code id="code-python" class="language-python"></code></pre>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="tab-replay">
+                    <div class="replay-form">
+                        <label>Headers (JSON)</label>
+                        <textarea id="replay-headers" rows="4"></textarea>
+
+                        <label>Body (JSON)</label>
+                        <textarea id="replay-body" rows="4"></textarea>
+
+                        <button id="replay-send-btn" class="primary-btn">Send Request</button>
+
+                        <h4>Replay Response</h4>
+                        <pre><code id="replay-response"></code></pre>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- The type='module' specifies this is a ES module -->
+    <script type="module" src="panel.js"></script>
+</body>
+
+</html>
