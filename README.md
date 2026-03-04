@@ -13,7 +13,7 @@ Stop digging through chaotic Network tabs in DevTools. Start exploring a structu
 ## 🔒 Unlock The Core Schema Engine (Missing File)
 
 > [!WARNING]
-> **Notice:** The file `utils/schemaParser.js` is intentionally omitted from this public repository. This file contains the proprietary recursive parsing algorithms that power the **Database Schema Inference** and **TypeScript Interface Generation** features. Without this file, the extension will capture traffic but will not be able to reconstruct JSON relational mapping.
+> **Notice:** The file `utils/schemaParser.js` is intentionally omitted from this public repository. This file contains the advanced recursive schema inference logic for nested JSON responses that power the **Entity structure inference** and **TypeScript Interface Generation** features. Without this file, the extension will capture traffic but will not be able to reconstruct JSON object models.
 
 **Want access to the core Schema Engine?**  
 1. ⭐ **Star this repository** at the top right of the page.
@@ -24,10 +24,10 @@ Stop digging through chaotic Network tabs in DevTools. Start exploring a structu
 
 ## ⚡ What Does It Actually Do?
 
-As you click around a website, the extension watches the traffic and builds an intelligent workspace. Tools like *BurpSuite* or *OWASP ZAP* charge thousands of dollars for these automated discovery pipelines. This extension does it for free right in your browser.
+As you click around a website, the extension watches the traffic and builds an intelligent workspace. **Inspired by professional workflows used in tools like BurpSuite and OWASP ZAP**, this extension provides an automated discovery pipeline directly in your browser.
 
 - **📡 Automatic REST & GraphQL Detection:** Seamlessly groups chaotic network calls by Base URL and Endpoint Paths (e.g., collapses `/users/1` and `/users/2` into `GET /users/:id`).
-- **🏗️ Database Schema Inference:** Automatically builds strong JSON schema interfaces and infers underlying SQL/NoSQL table relationships by analyzing the nested structures of intercepted response bodies.
+- **🏗️ Entity Structure Inference:** Automatically builds strong JSON schema interfaces and infers potential entity structures from nested JSON responses.
 - **🕵️ Deep Hidden Endpoint Discovery:** Uses a 4-pronged heuristic engine (JS Bundle regex scanning, Response JSON crawling, ID Pattern inference, and Dictionary whitelists) to discover internal/admin APIs that *haven't even been called yet*.
 - **📊 Execution Flow Waterfall:** Visualizes the exact chronological order of API calls (e.g. `Page Load ↓ /getCsrfToken ↓ /getUser`).
 - **📁 Dependency Directory Tree:** Renders cleanly formatted ASCII tree topologies of the API's routing structure.
