@@ -4,7 +4,7 @@
 [![Chrome Extension](https://img.shields.io/badge/Chrome-Extension-blue.svg)](https://developer.chrome.com/docs/extensions/)
 [![GitHub stars](https://img.shields.io/github/stars/hamzak-code/Api-reverse-Engineer.svg?style=social)](https://github.com/hamzak-code/Api-reverse-Engineer)
 
-**API Reverse Engineer** is a high-fidelity Chrome Extension designed for Security Researchers, Developers, and QA Engineers. It transforms your DevTools into a mission control for API forensics—automatically reconstructing architectural blueprints, mapping dependencies, and auditing security in real-time as you browse.
+**API Reverse Engineer** is a high-fidelity Chrome Extension designed for Security Researchers, Developers, and QA Engineers. It transforms your DevTools into a mission control for API forensics automatically reconstructing architectural blueprints, mapping dependencies, and auditing security in real-time as you browse.
 
 ---
 
