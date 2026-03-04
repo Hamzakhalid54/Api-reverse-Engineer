@@ -75,15 +75,25 @@
                     <div style="margin-left:auto; display:flex; gap: 10px;">
                         <button id="mode-timeline-btn" class="filter-btn active" style="font-size:0.85rem">Timeline
                             Mode</button>
-                        <button id="mode-tree-btn" class="filter-btn" style="font-size:0.85rem">Dependency Tree</button>
+                        <button id="mode-tree-btn" class="filter-btn" style="font-size:0.85rem">Directory Mode</button>
+                        <button id="mode-flow-btn" class="filter-btn" style="font-size:0.85rem">Dependency Flow</button>
                     </div>
                     <button id="close-graph-btn" class="danger"
                         style="margin-left:15px; padding: 4px 8px;">Close</button>
                 </div>
                 <div id="canvas-container" class="scroll-container"
-                    style="height: 60vh; background: var(--bg-deep); border-radius: 8px; border: 1px solid var(--border-color); padding: 20px; text-align: center;">
+                    style="height: 60vh; background: var(--bg-deep); border-radius: 8px; border: 1px solid var(--border-color); padding: 20px; text-align: center; position: relative; overflow: auto;">
+                    <svg id="graph-svg"
+                        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1;">
+                        <defs>
+                            <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                                <feGaussianBlur stdDeviation="3" result="blur" />
+                                <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                            </filter>
+                        </defs>
+                    </svg>
                     <div id="graph-nodes-container"
-                        style="display: flex; flex-wrap: wrap; justify-content: center; gap: 30px; align-items: center; min-height: 100%;">
+                        style="position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 40px; min-height: 100%; padding: 40px 0;">
                         <!-- Dynamic Nodes -->
                     </div>
                 </div>
@@ -140,7 +150,8 @@
                 <div class="tabs">
                     <button class="tab-btn active" data-target="tab-schema">Schema Viewer</button>
                     <button class="tab-btn" data-target="tab-code">Code Generator / Scraper</button>
-                    <button class="tab-btn" data-target="tab-replay">API Replay</button>
+                    <button class="tab-btn" data-target="tab-replay">API Replay / Fuzz</button>
+                    <button class="tab-btn" data-target="tab-security">Security Report</button>
                 </div>
 
                 <div class="tab-content active" id="tab-schema">
@@ -177,28 +188,28 @@
                     <div class="code-box">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <h4>cURL</h4>
-                            <button class="copy-btn" data-target="code-curl">Copy</button>
+                            <button class="copy-btn btn-copy" data-target="code-curl">Copy</button>
                         </div>
                         <pre><code id="code-curl" class="language-bash"></code></pre>
                     </div>
                     <div class="code-box">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <h4>Axios (JS)</h4>
-                            <button class="copy-btn" data-target="code-axios">Copy</button>
+                            <button class="copy-btn btn-copy" data-target="code-axios">Copy</button>
                         </div>
                         <pre><code id="code-axios" class="language-javascript"></code></pre>
                     </div>
                     <div class="code-box">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <h4>Fetch (JS)</h4>
-                            <button class="copy-btn" data-target="code-node">Copy</button>
+                            <button class="copy-btn btn-copy" data-target="code-fetch">Copy</button>
                         </div>
-                        <pre><code id="code-node" class="language-javascript"></code></pre>
+                        <pre><code id="code-fetch" class="language-javascript"></code></pre>
                     </div>
                     <div class="code-box">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <h4>Python Requests</h4>
-                            <button class="copy-btn" data-target="code-python">Copy</button>
+                            <button class="copy-btn btn-copy" data-target="code-python">Copy</button>
                         </div>
                         <pre><code id="code-python" class="language-python"></code></pre>
                     </div>
@@ -212,10 +223,32 @@
                         <label>Body (JSON)</label>
                         <textarea id="replay-body" rows="4"></textarea>
 
-                        <button id="replay-send-btn" class="primary-btn">Send Request</button>
+                        <div style="display:flex; gap: 10px;">
+                            <button id="replay-send-btn" class="primary-btn">Send Request</button>
+                            <button id="replay-fuzz-btn" class="primary-btn"
+                                style="background: var(--warning); color: #000;">Fuzz Parameters</button>
+                        </div>
 
-                        <h4>Replay Response</h4>
+                        <div id="fuzz-results-box" class="hidden" style="margin-top: 20px;">
+                            <h4>Fuzzer Results (IDOR / Logic Check)</h4>
+                            <div id="fuzz-results" class="scroll-container"
+                                style="max-height: 200px; background: var(--bg-deep); border: 1px solid var(--border); border-radius: 4px; padding: 10px;">
+                            </div>
+                        </div>
+
+                        <h4>Response</h4>
                         <pre><code id="replay-response"></code></pre>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="tab-security">
+                    <div class="security-report">
+                        <h3>Session Security Findings</h3>
+                        <p style="color:var(--text-secondary); margin-bottom: 20px;">Aggregated vulnerability report for
+                            all captured endpoints.</p>
+                        <div id="security-report-list" class="scroll-container">
+                            <p class="empty-msg">No session-wide vulnerabilities found yet. Keep browsing.</p>
+                        </div>
                     </div>
                 </div>
             </div>
