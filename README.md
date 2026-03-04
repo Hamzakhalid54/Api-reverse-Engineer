@@ -38,7 +38,7 @@ Our security engine is tuned for high-signal forensics:
 ### 5. 📝 Pro Documentation Export
 Generate professional-grade artifacts in seconds:
 - **HTML Documentation Website:** A stunning, self-contained docs site with sidebar navigation and interactive code blocks.
-- **Multi-Format Code Gen:** Instant copy-pasteable snippets for **cURL**, **Axios**, **Native Fetch**, and **Python Requests**—all with interactive "Copied!" feedback.
+- **Multi-Format Code Gen:** Instant copy-pasteable snippets for **cURL**, **Axios**, **Native Fetch**, and **Python Requests** all with interactive "Copied!" feedback.
 - **OpenAPI 3.0 & Postman:** Full export support for modern API toolchains.
 
 ---
