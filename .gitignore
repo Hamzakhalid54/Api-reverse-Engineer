@@ -1,4 +1,4 @@
-utils/schemaParser.js
+# utils/schemaParser.js removed from ignore
 node_modules/
 .DS_Store
 *.log
